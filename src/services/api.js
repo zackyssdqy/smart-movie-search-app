@@ -12,6 +12,7 @@ export const searchMovies = async (query, page = 1) => {
       type: "movie",
     },
   });
+  console.log("Res nya:", res.data);
 
   return res.data;
 };
@@ -24,6 +25,8 @@ export const getMovieDetail = async (id) => {
       plot: "full",
     },
   });
+
+  console.log("Res disini:", res.data);
 
   return res.data;
 };
