@@ -3,16 +3,21 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 const apiKey = import.meta.env.VITE_API_KEY;
 
-export const searchMovies = async (query, page = 1) => {
+export const searchMovies = async (query, page = 1, year) => {
+  const params = {
+    apikey: apiKey,
+    s: query,
+    page,
+    type: "movie",
+  };
+
+  if (year) {
+    params.y = year;
+  }
+
   const res = await axios.get(apiUrl, {
-    params: {
-      apikey: apiKey,
-      s: query,
-      page,
-      type: "movie",
-    },
+    params,
   });
-  console.log("Res nya:", res.data);
 
   return res.data;
 };
@@ -25,8 +30,6 @@ export const getMovieDetail = async (id) => {
       plot: "full",
     },
   });
-
-  console.log("Res disini:", res.data);
 
   return res.data;
 };

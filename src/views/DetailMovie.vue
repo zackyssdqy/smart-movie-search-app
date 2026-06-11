@@ -4,13 +4,9 @@
       ← Back to search
     </RouterLink>
 
-    <section v-if="loading" class="mt-8 rounded-xl bg-slate-900 p-6 text-slate-300">
-      Loading movie detail...
-    </section>
+    <LoadingState class="mt-8" v-if="loading" message="Loading movie detail..." />
 
-    <section v-else-if="error" class="mt-8 rounded-xl bg-red-950 p-6 text-red-200">
-      {{ error }}
-    </section>
+    <ErrorState class="mt-8" v-else-if="error" :message="error" />
 
     <section v-else-if="movie" class="mt-8 grid gap-8 md:grid-cols-[300px_1fr]">
       <div>
@@ -19,14 +15,22 @@
       </div>
 
       <div>
-        <div class="mb-4">
-          <h1 class="text-3xl font-bold md:text-4xl">
-            {{ movie.Title }}
-          </h1>
+        <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-bold md:text-4xl">
+              {{ movie.Title }}
+            </h1>
 
-          <p class="mt-2 text-slate-400">
-            {{ movie.Year }} • {{ movie.Runtime }} • {{ movie.Genre }}
-          </p>
+            <p class="mt-2 text-slate-400">
+              {{ movie.Year }} • {{ movie.Runtime }} • {{ movie.Genre }}
+            </p>
+          </div>
+
+          <FavoriteButton
+            :active="isSaved"
+            aria-label="Toggle favorite for this movie"
+            @click="handleFavoriteClick"
+          />
         </div>
 
         <div class="mb-6 flex flex-wrap gap-3">
@@ -95,15 +99,24 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getMovieDetail } from '@/services/api'
+import FavoriteButton from '@/components/FavoriteButton.vue'
+import ErrorState from '@/components/states/ErrorState.vue'
+import LoadingState from '@/components/states/LoadingState.vue'
+import { useFavoritesStore } from '@/stores/favorites'
 
 const route = useRoute()
+const favoritesStore = useFavoritesStore()
 
 const movie = ref(null)
 const loading = ref(false)
 const error = ref('')
+
+const isSaved = computed(() => {
+  return movie.value ? favoritesStore.isFavorite(movie.value.imdbID) : false
+})
 
 const getPoster = (poster) => {
   if (!poster || poster === 'N/A') {
@@ -111,6 +124,14 @@ const getPoster = (poster) => {
   }
 
   return poster
+}
+
+const handleFavoriteClick = () => {
+  if (!movie.value) {
+    return
+  }
+
+  favoritesStore.toggleFavorite(movie.value)
 }
 
 const fetchMovieDetail = async () => {

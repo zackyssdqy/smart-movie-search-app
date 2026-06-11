@@ -1,7 +1,18 @@
 <template>
-  <article class="overflow-hidden rounded-xl bg-slate-900 shadow-lg transition hover:-translate-y-1 hover:bg-slate-800">
+  <article :class="cardClass">
+    <FavoriteButton
+      class="absolute right-3 top-3 z-10"
+      :active="isSaved"
+      :aria-label="`Toggle favorite for ${movie.Title}`"
+      @click.stop="handleFavoriteClick"
+    />
+
     <RouterLink :to="`/movie/${movie.imdbID}`" class="block">
-      <img :src="getPoster(movie.Poster)" :alt="movie.Title" class="h-80 w-full object-cover" />
+      <img
+        :src="getPoster(movie.Poster)"
+        :alt="movie.Title"
+        :class="posterClass"
+      />
 
       <div class="p-4">
         <h2 class="line-clamp-2 font-semibold text-white">
@@ -17,12 +28,40 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import FavoriteButton from '@/components/FavoriteButton.vue'
+import { useFavoritesStore } from '@/stores/favorites'
+
+const props = defineProps({
   movie: {
     type: Object,
     required: true,
   },
+  compact: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+const favoritesStore = useFavoritesStore()
+
+const isSaved = computed(() => favoritesStore.isFavorite(props.movie.imdbID))
+const cardClass = computed(() => {
+  return [
+    'group relative overflow-hidden rounded-xl bg-slate-900 shadow-lg transition hover:-translate-y-1 hover:bg-slate-800',
+    props.compact ? 'w-44 shrink-0 sm:w-48' : '',
+  ].join(' ')
+})
+const posterClass = computed(() => {
+  return [
+    'w-full object-cover',
+    props.compact ? 'h-64' : 'h-80',
+  ].join(' ')
+})
+
+const handleFavoriteClick = () => {
+  favoritesStore.toggleFavorite(props.movie)
+}
 
 const getPoster = (poster) => {
   if (!poster || poster === 'N/A') {
