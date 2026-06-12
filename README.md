@@ -1,44 +1,64 @@
 # smart-movie-search-app
 
-This template should help get you started developing with Vue 3 in Vite.
+Smart Movie Search App adalah aplikasi pencarian film berbasis Vue 3 yang menggunakan OMDb API untuk mencari film, melihat detail film, dan menyimpan daftar favorit secara persisten. Proyek ini dibuat untuk keperluan technical test posisi Frontend Developer 
 
-## Recommended IDE Setup
+## Deskripsi Project
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Fitur yang diimplementasikan pada aplikasi ini:
 
-## Recommended Browser Setup
+- Pencarian film dengan debouncing 500ms
+- Infinite scroll untuk memuat hasil pencarian secara bertahap.
+- Halaman detail film untuk menampilkan informasi lengkap seperti plot, actors, ratings, genre, runtime, dan metadata lain.
+- Daftar favorit yang dapat ditambah atau dihapus dan disimpan ke `localStorage`.
+- Empty state dan error state untuk kondisi hasil kosong, koneksi bermasalah, atau respons error dari API.
+- Halaman discovery di halaman utama yang menampilkan koleksi film berdasarkan data OMDb dengan menerapkan filter untuk berdasarkan genre film.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Cara Menjalankan
 
-## Customize configuration
+### 1. Install dependencies
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### 2. Siapkan Environment Variable
 
-```sh
+Pastikan file `.env` berisi konfigurasi berikut:
+
+```env
+VITE_API_URL=https://www.omdbapi.com/
+VITE_API_KEY=your_omdb_api_key
+```
+
+### 3. Jalankan Project
+
+```bash
 npm run dev
 ```
 
-### Compile and Minify for Production
 
-```sh
-npm run build
-```
+## Tech Stack
 
-### Lint with [ESLint](https://eslint.org/)
+- Vue 3
+- Vite
+- Vue Router
+- Pinia
+- Axios
+- Tailwind CSS
+- LocalStorage
+- OMDb API
 
-```sh
-npm run lint
-```
+## Architectural Decisions
+
+- Saya memilih **Vue 3 + Vite** karena disamping perusahaan saat ini menggunakan vue sebagai tech stack, vue ringan, dan cepat untuk setup.
+- Saya menggunakan **Vue Router** karena aplikasi memiliki lebih dari satu halaman, yaitu home, detail movie, dan favorites.
+- Saya memakai **Pinia** untuk menyimpan state favorit karena state-nya sederhana, dipakai di beberapa halaman, dan perlu dipersist ke `localStorage` tanpa membuat logic state tersebar di banyak komponen.
+- Saya memisahkan request ke **`src/services/api.js`** agar logic API tidak bercampur dengan UI component.
+- Saya membuat **`useDebounce`** sebagai composable agar logic penundaan input bisa dipakai ulang dan tetap terpisah dari view.
+- Saya memakai **IntersectionObserver** untuk infinite scroll supaya pemuatan data lebih efisien dibanding event scroll manual.
+
+## Bonus / Improvements
+
+- Menambahkan pencarian/filter tambahan seperti year, genre, atau rating.
+- Menambahkan caching hasil pencarian agar request ke API lebih hemat.
+- Memperbaiki pengalaman visual halaman discovery agar lebih informatif.
